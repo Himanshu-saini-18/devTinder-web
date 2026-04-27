@@ -1,18 +1,45 @@
-import React from 'react'
-import Navbar from './Navbar'
-import { Outlet } from 'react-router-dom'
-import Footer from './Footer'
-
+import React, { useEffect } from "react";
+import Navbar from "./Navbar";
+import { Outlet, useNavigate } from "react-router-dom";
+import Footer from "./Footer";
+import { BASE_URL } from "../utils/constants";
+import { useDispatch, useSelector } from "react-redux";
+import { addUser } from "../utils/userSlice";
+import axios from "axios";
 const Body = () => {
-  return (
-   <div data-theme="dark" className="min-h-screen flex flex-col">
-     <Navbar/>
-     <div className="flex-grow">
-       <Outlet/>
-     </div>
-     <Footer/>
-   </div>
-  )
-}
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-export default Body
+  const userData = useSelector(store=>store.user);
+  const fetchUser = async () => {
+    try {
+      if(userData) return
+      const res = await axios.get(BASE_URL + "/profile/view", {
+        withCredentials: true,
+      });
+      dispatch(addUser(res.data));
+    } catch (err) {
+      if (err.status === 401) {
+        navigate("/login");
+      }
+
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  return (
+    <div data-theme="dark" className="min-h-screen flex flex-col">
+      <Navbar />
+      <div className="flex-grow">
+        <Outlet />
+      </div>
+      <Footer />
+    </div>
+  );
+};
+
+export default Body;
