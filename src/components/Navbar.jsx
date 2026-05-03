@@ -9,7 +9,7 @@ const Navbar = () => {
   const user = useSelector((store) => store.user);
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  console.log(user);
+ 
 
   const handleLogout = async () => {
     try {
@@ -52,7 +52,7 @@ const Navbar = () => {
                   </Link>
                 </li>
                 <li>
-                  <a>Settings</a>
+                  <Link to={"/connections"}>Connections</Link>
                 </li>
                 <li>
                   <a onClick={handleLogout}>Logout</a>
