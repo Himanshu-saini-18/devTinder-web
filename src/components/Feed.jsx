@@ -1,27 +1,38 @@
 import React, { useEffect } from "react";
 import { BASE_URL } from "../utils/constants";
 import { useDispatch, useSelector } from "react-redux";
-import { addFeed } from "../utils/feedSlice";
+import { fetchFeed } from "../utils/feedSlice";
 import axios from "axios";
 import UserCard from "./UserCard";
 const Feed = () => {
-  const feed = useSelector((store) => store.feed);
+;
   const dispatch = useDispatch();
-  const getFeed = async () => {
-    if (feed) return;
-    try {
-      const res = await axios.get(BASE_URL + "/feed", {
-        withCredentials: true,
-      });
 
-      dispatch(addFeed(res?.data.data));
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
+  const { feed, loading, error } = useSelector((store) => store.feed);
   useEffect(() => {
-    getFeed();
-  }, []);
+    if (!feed) {
+      dispatch(fetchFeed());
+    }
+  }, [dispatch, feed]);
+
+  if(loading){
+    return(
+      <h1 className="flex justify-center mt-10">
+        Loading Feed...
+      </h1>
+    )
+  }
+  if(error){
+    return (
+      <h1 className="flex justify-center mt-10 text-red-500">
+        {error}
+      </h1>
+    );
+  }
+
+  if (!feed) return null;
+  if (feed.length <= 0)
+    return <h1 className="flex justify-center mx-10 mt-3">No New Users Founds!</h1>;
 
   return (
     feed && (
